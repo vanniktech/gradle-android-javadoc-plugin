@@ -14,7 +14,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "gradle.plugin.com.vanniktech:gradle-android-javadoc-plugin:0.2.0"
+        classpath "gradle.plugin.com.vanniktech:gradle-android-javadoc-plugin:0.2.1"
     }
 }
 
