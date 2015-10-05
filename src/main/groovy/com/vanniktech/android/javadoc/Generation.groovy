@@ -12,9 +12,9 @@ class Generation implements Plugin<Project> {
             throw new UnsupportedOperationException("Project is not an Android project")
         }
 
-        if (project.android.applicationVariants != null) {
+        if (project.android.hasProperty('applicationVariants')) {
             new GenerationApp().apply(project)
-        } else if (project.android.libraryVariants != null) {
+        } else if (project.android.hasProperty('libraryVariants')) {
             new GenerationLibrary().apply(project)
         } else {
             throw new UnsupportedOperationException("Project is not an Android app nor an Android library module")
