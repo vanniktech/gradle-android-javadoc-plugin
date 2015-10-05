@@ -1,5 +1,6 @@
 package com.vanniktech.android.javadoc.library
 
+import com.vanniktech.android.javadoc.Generation
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Delete
@@ -13,7 +14,7 @@ class GenerationLibrary implements Plugin<Project> {
                 title = "Documentation for Android Library module $project.android.defaultConfig.versionName v$project.android.defaultConfig.versionCode"
                 description "Generates Javadoc for $variant.name."
 
-                destinationDir = new File(getJavadocFolder(project), variant.baseName)
+                destinationDir = new File(Generation.getJavadocFolder(project), variant.baseName)
                 source = variant.javaCompile.source
 
                 ext.androidJar = "${project.android.sdkDirectory}/platforms/${project.android.compileSdkVersion}/android.jar"
@@ -29,11 +30,7 @@ class GenerationLibrary implements Plugin<Project> {
         }
 
         project.clean.dependsOn project.task("deleteJavadoc", type: Delete) {
-            delete getJavadocFolder(project)
+            delete Generation.getJavadocFolder(project)
         }
-    }
-
-    String getJavadocFolder(Project project) {
-        return "${project.getProjectDir()}/javaDoc/";
     }
 }
