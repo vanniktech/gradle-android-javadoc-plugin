@@ -14,32 +14,16 @@ buildscript {
         }
     }
     dependencies {
-        classpath "gradle.plugin.com.vanniktech:gradle-android-javadoc-plugin:0.1.0"
+        classpath "gradle.plugin.com.vanniktech:gradle-android-javadoc-plugin:0.2.0"
     }
 }
-```
 
-## library/build.gradle
+apply plugin: "com.vanniktech.android.javadoc"
 
-```groovy
-apply plugin: "com.vanniktech.android.javadoc.library"
-```
-
-## app/build.gradle
-
-```groovy
-apply plugin: "com.vanniktech.android.javadoc.app"
-```
-
-## Javadoc Debug
+## Javadoc
 
 ```groovy
 ./gradlew generateDebugJavadoc
-```
-
-## Javadoc Release
-
-```groovy
 ./gradlew generateReleaseJavadoc
 ```
 

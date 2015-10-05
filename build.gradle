@@ -28,7 +28,7 @@ dependencies {
 }
 
 group = 'com.vanniktech'
-version = '0.1.0'
+version = '0.2.0'
 
 pluginBundle {
     website = 'https://github.com/vanniktech/gradle-android-javadoc-plugin'
@@ -37,12 +37,20 @@ pluginBundle {
     description = 'Gradle plugin that generates Java Documentation from Android Gradle project.'
 
     plugins {
+        androidJavadoc {
+            id = 'com.vanniktech.android.javadoc'
+            displayName = 'Gradle Android Javadoc Plugin'
+            tags = ['gradle', 'android', 'javadoc', 'app module', 'library module']
+            description = 'Gradle plugin that generates Java Documentation from Android project.'
+            version = '0.2.0'
+        }
+
         androidJavadocApp {
             id = 'com.vanniktech.android.javadoc.app'
             displayName = 'Gradle Android Javadoc Plugin for App'
             tags = ['gradle', 'android', 'javadoc', 'app module']
             description = 'Gradle plugin that generates Java Documentation from Android app module.'
-            version = '0.1.0'
+            version = '0.2.0'
         }
 
         androidJavadocLibrary {
@@ -50,7 +58,7 @@ pluginBundle {
             displayName = 'Gradle Android Javadoc Plugin for Library'
             tags = ['gradle', 'android', 'javadoc', 'library module']
             description = 'Gradle plugin that generates Java Documentation from Android library module.'
-            version = '0.1.0'
+            version = '0.2.0'
         }
     }
 }
