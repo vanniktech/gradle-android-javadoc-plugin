@@ -19,6 +19,7 @@ buildscript {
 }
 
 apply plugin: "com.vanniktech.android.javadoc"
+```
 
 ## Javadoc
 
