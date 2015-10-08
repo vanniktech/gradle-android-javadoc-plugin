@@ -4,7 +4,7 @@ Gradle plugin that generates Java Documentation from Android Gradle project.
 
 # Set up
 
-## Set up maven
+## Root build.gradle
 
 ```groovy
 buildscript {
@@ -17,7 +17,11 @@ buildscript {
         classpath "gradle.plugin.com.vanniktech:gradle-android-javadoc-plugin:0.2.1"
     }
 }
+```
 
+## Android or Library build.gradle
+
+```groovy
 apply plugin: "com.vanniktech.android.javadoc"
 ```
 
