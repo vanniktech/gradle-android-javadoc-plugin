@@ -44,21 +44,5 @@ pluginBundle {
             description = 'Gradle plugin that generates Java Documentation from Android project.'
             version = '0.2.1'
         }
-
-        androidJavadocApp {
-            id = 'com.vanniktech.android.javadoc.app'
-            displayName = 'Gradle Android Javadoc Plugin for App'
-            tags = ['gradle', 'android', 'javadoc', 'app module']
-            description = 'Gradle plugin that generates Java Documentation from Android app module.'
-            version = '0.2.1'
-        }
-
-        androidJavadocLibrary {
-            id = 'com.vanniktech.android.javadoc.library'
-            displayName = 'Gradle Android Javadoc Plugin for Library'
-            tags = ['gradle', 'android', 'javadoc', 'library module']
-            description = 'Gradle plugin that generates Java Documentation from Android library module.'
-            version = '0.2.1'
-        }
     }
 }
