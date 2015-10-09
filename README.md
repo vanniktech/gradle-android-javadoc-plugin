@@ -1,5 +1,7 @@
 # gradle-android-javadoc-plugin
 
+[![Build Status](https://travis-ci.org/vanniktech/gradle-android-javadoc-plugin.svg)](https://travis-ci.org/vanniktech/gradle-android-javadoc-plugin)
+
 Gradle plugin that generates Java Documentation from Android Gradle project.
 
 # Set up
