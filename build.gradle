@@ -34,14 +34,12 @@ pluginBundle {
     website = 'https://github.com/vanniktech/gradle-android-javadoc-plugin'
     vcsUrl = 'https://github.com/vanniktech/gradle-android-javadoc-plugin'
 
-    description = 'Gradle plugin that generates Java Documentation from Android Gradle project.'
-
     plugins {
         androidJavadoc {
             id = 'com.vanniktech.android.javadoc'
             displayName = 'Gradle Android Javadoc Plugin'
             tags = ['gradle', 'android', 'javadoc', 'app module', 'library module']
-            description = 'Gradle plugin that generates Java Documentation from Android project.'
+            description = 'Gradle plugin that generates Java Documentation from an Android Gradle project'
             version = '0.2.1'
         }
     }
