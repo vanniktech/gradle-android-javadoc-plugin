@@ -13,15 +13,15 @@ Gradle plugin that generates Java Documentation from an Android Gradle project.
 buildscript {
     repositories {
         maven {
-            url "https://plugins.gradle.org/m2/"
+            url 'https://plugins.gradle.org/m2/'
         }
     }
     dependencies {
-        classpath "gradle.plugin.com.vanniktech:gradle-android-javadoc-plugin:0.2.1"
+        classpath 'gradle.plugin.com.vanniktech:gradle-android-javadoc-plugin:0.2.1'
     }
 }
 
-apply plugin: "com.vanniktech.android.javadoc"
+apply plugin: 'com.vanniktech.android.javadoc'
 ```
 
 ## Get Javadoc
