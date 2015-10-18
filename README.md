@@ -5,6 +5,8 @@
 
 Gradle plugin that generates Java Documentation from an Android Gradle project.
 
+Works with the latest Gradle Android Tools version 1.3.1.
+
 # Set up
 
 **app/build.gradle or library/build.gradle**
