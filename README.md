@@ -2,10 +2,11 @@
 
 [![Build Status](https://travis-ci.org/vanniktech/gradle-android-javadoc-plugin.svg)](https://travis-ci.org/vanniktech/gradle-android-javadoc-plugin)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+![Java 8 required](https://img.shields.io/badge/java-8-brightgreen.svg)
 
 Gradle plugin that generates Java Documentation from an Android Gradle project.
 
-Works with the latest Gradle Android Tools version 1.3.1.
+Works with the latest Gradle Android Tools version 1.3.1. This plugin is compiled using Java 8 hence you also need Java 8 in order to use it.
 
 # Set up
 
