@@ -15,17 +15,17 @@ Works with the latest Gradle Android Tools version 1.3.1. This plugin is compile
 ```groovy
 buildscript {
     repositories {
-        maven {
-            url 'https://plugins.gradle.org/m2/'
-        }
+        mavenCentral()
     }
     dependencies {
-        classpath 'gradle.plugin.com.vanniktech:gradle-android-javadoc-plugin:0.2.1'
+        classpath 'com.vanniktech:gradle-android-javadoc-plugin:0.2.1'
     }
 }
 
 apply plugin: 'com.vanniktech.android.javadoc'
 ```
+
+Information: [This plugin is also available on Gradle plugins](https://plugins.gradle.org/plugin/com.vanniktech.android.javadoc)
 
 ## Get Javadoc
 
