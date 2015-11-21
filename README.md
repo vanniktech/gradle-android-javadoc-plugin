@@ -27,6 +27,14 @@ apply plugin: 'com.vanniktech.android.javadoc'
 
 Information: [This plugin is also available on Gradle plugins](https://plugins.gradle.org/plugin/com.vanniktech.android.javadoc)
 
+### Snapshots
+
+Can be found [here](https://oss.sonatype.org/#nexus-search;quick~gradle-android-javadoc-plugin). Current one is:
+
+```groovy
+classpath 'com.vanniktech:gradle-android-javadoc-plugin:0.2.2-SNAPSHOT'
+```
+
 ## Get Javadoc
 
 ```groovy
