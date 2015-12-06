@@ -32,6 +32,7 @@ class Generation implements Plugin<Project> {
             project.task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
                 title = "Documentation for Android $project.android.defaultConfig.versionName v$project.android.defaultConfig.versionCode"
                 description = "Generates Javadoc for $variant.name."
+                group = 'Documentation'
 
                 destinationDir = new File(getJavadocFolder(project), variant.baseName)
                 source = variant.javaCompile.source
