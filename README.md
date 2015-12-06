@@ -51,6 +51,6 @@ classpath 'com.vanniktech:gradle-android-javadoc-plugin:0.2.2-SNAPSHOT'
 
 # License
 
-Copyright (C) 2014-2015 Vanniktech - Niklas Baudy
+Copyright (C) 2015 Vanniktech - Niklas Baudy
 
 Licensed under the Apache License, Version 2.0
