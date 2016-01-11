@@ -34,8 +34,8 @@ group = GROUP
 version = VERSION_NAME
 
 pluginBundle {
-    website = 'https://github.com/vanniktech/gradle-android-javadoc-plugin'
-    vcsUrl = 'https://github.com/vanniktech/gradle-android-javadoc-plugin'
+    website = POM_URL
+    vcsUrl = POM_SCM_URL
 
     plugins {
         androidJavadoc {
