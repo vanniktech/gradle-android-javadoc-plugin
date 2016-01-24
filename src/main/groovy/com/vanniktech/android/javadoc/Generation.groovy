@@ -57,6 +57,6 @@ class Generation implements Plugin<Project> {
     }
 
     private static String getJavadocFolder(final Project project) {
-        return "${project.getProjectDir()}/javaDoc/";
+        return "${project.getProjectDir()}/javaDoc/"
     }
 }
