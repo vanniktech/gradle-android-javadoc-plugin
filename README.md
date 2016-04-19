@@ -1,6 +1,7 @@
 # gradle-android-javadoc-plugin
 
 [![Build Status](https://travis-ci.org/vanniktech/gradle-android-javadoc-plugin.svg?branch=master)](https://travis-ci.org/vanniktech/gradle-android-javadoc-plugin?branch=master)
+[![Codecov](https://codecov.io/github/vanniktech/gradle-android-javadoc-plugin/coverage.svg?branch=master)](https://codecov.io/github/vanniktech/gradle-android-javadoc-plugin?branch=master)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 ![Java 8 required](https://img.shields.io/badge/java-8-brightgreen.svg)
 
