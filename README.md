@@ -7,7 +7,7 @@
 
 Gradle plugin that generates Java Documentation from an Android Gradle project.
 
-Works with the latest Gradle Android Tools version 2.1.0. This plugin is compiled using Java 8 hence you also need Java 8 in order to use it.
+Works with the latest Gradle Android Tools version 2.1.3. This plugin is compiled using Java 8 hence you also need Java 8 in order to use it.
 
 # Set up
 
