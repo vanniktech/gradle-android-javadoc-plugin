@@ -46,8 +46,45 @@ classpath 'com.vanniktech:gradle-android-javadoc-plugin:0.2.2-SNAPSHOT'
 **HTML reports**
 
 ```
-<subproject>/javaDoc/debug/index.html
-<subproject>/javaDoc/release/index.html
+<subproject>/build/docs/javadoc/debug/index.html
+<subproject>/build/docs/javadoc/release/index.html
+```
+
+## Get Javadoc archive
+
+```
+./gradlew generateDebugJavadocJar
+./gradlew generateReleaseJavadocJar
+```
+
+## Customize Plugin
+
+```groovy
+androidJavadoc {
+    // variantFilter takes a closure that received an Android variant as parameter.
+    // Return true to generate javadoc task for this variant, false to do nothing
+    // This is the default closure :
+    variantFilter { variant ->
+                      if (variant) {
+                          return true
+                      } else {
+                          return false
+                      }
+                  }
+
+    // taskNameTransformer takes a closure to customise the task name.
+    // Task name pattern is "generate${taskNameTransformer(variant).capitalize()}Javadoc"
+    // This is the default implementation :
+    taskNameTransformer { variant ->
+        variant.name
+    }
+
+    // outputDir return the documentation output dir
+    // Default implementation :
+    outputDir = { Project project ->
+        "${project.buildDir}/docs/javadoc/"
+    }
+}
 ```
 
 # License
