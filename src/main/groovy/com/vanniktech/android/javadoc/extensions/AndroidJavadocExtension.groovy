@@ -2,11 +2,6 @@ package com.vanniktech.android.javadoc.extensions
 
 import org.gradle.api.Project
 
-/**
- * <p>Created on 23/06/17
- *
- * @author Bastien Paul
- */
 public class AndroidJavadocExtension {
     /**
      * Closure used for filter some variant out
@@ -33,5 +28,4 @@ public class AndroidJavadocExtension {
     Closure outputDir = { Project project ->
         "${project.buildDir}/docs/javadoc/"
     }
-
 }

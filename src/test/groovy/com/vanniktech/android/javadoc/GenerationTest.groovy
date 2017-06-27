@@ -14,8 +14,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 class GenerationTest {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none()
+    @Rule public ExpectedException expectedException = ExpectedException.none()
 
     def generation
     def project

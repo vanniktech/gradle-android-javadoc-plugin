@@ -65,14 +65,15 @@ class Generation implements Plugin<Project> {
         String taskName = genJavadocTaskName(project, variant)
 
         logger.debug "Create task ${taskName} for project ${project.name}, variant ${variant.name}"
-        // protection if a task already exists because the name of the task is configurable
+        // We are creating the task with the same name only once. This is a protection if task already exists
+        // because the name of the task is configurable and can be the same for several variants.
         if (project.tasks.findByPath(taskName)) {
             logger.debug "task $taskName already exists"
             return project.tasks.findByPath(taskName)
         } else {
-            Task t1 = createJavadocTask(project, variant, taskName)
-            Task t2 = createJavadocArchiveTask(project, variant, genJavadocJarTaskName(project, variant))
-            t2.dependsOn(t1)
+            Task javadocTask = createJavadocTask(project, variant, taskName)
+            Task javadocArchiveTask = createJavadocArchiveTask(project, variant, genJavadocJarTaskName(project, variant))
+            javadocArchiveTask.dependsOn(javadocTask)
         }
     }
 
