@@ -12,32 +12,39 @@ Works with the latest Gradle Android Tools version 3.0.1.
 
 **app/build.gradle** or **library/build.gradle**
 
-```groovy
+```gradle
 buildscript {
   repositories {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.vanniktech:gradle-android-javadoc-plugin:0.2.1'
+    classpath "com.vanniktech:gradle-android-javadoc-plugin:0.2.1"
   }
 }
 
-apply plugin: 'com.vanniktech.android.javadoc'
+apply plugin: "com.vanniktech.android.javadoc"
 ```
 
 Information: [This plugin is also available on Gradle plugins](https://plugins.gradle.org/plugin/com.vanniktech.android.javadoc)
 
-### Snapshots
+### Snapshot
 
-Can be found [here](https://oss.sonatype.org/#nexus-search;quick~gradle-android-javadoc-plugin). Current one is:
+```gradle
+buildscript {
+  repositories {
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+  }
+  dependencies {
+    classpath "com.vanniktech:gradle-android-javadoc-plugin:0.3.0-SNAPSHOT"
+  }
+}
 
-```groovy
-classpath 'com.vanniktech:gradle-android-javadoc-plugin:0.2.2-SNAPSHOT'
+apply plugin: "com.vanniktech.android.javadoc"
 ```
 
 ## Get Javadoc
 
-```groovy
+```gradle
 ./gradlew generateDebugJavadoc
 ./gradlew generateReleaseJavadoc
 ```
