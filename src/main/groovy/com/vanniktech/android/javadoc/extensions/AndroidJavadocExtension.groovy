@@ -2,7 +2,7 @@ package com.vanniktech.android.javadoc.extensions
 
 import org.gradle.api.Project
 
-public class AndroidJavadocExtension {
+class AndroidJavadocExtension {
     /**
      * Closure used for filter some variant out
      */
