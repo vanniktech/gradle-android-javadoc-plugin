@@ -1,6 +1,7 @@
 package com.vanniktech.android.javadoc
 
 import com.vanniktech.android.javadoc.extensions.AndroidJavadocExtension
+import org.gradle.api.Task
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.testfixtures.ProjectBuilder
@@ -20,14 +21,14 @@ class GenerationTest {
     def project
 
     @Before
-    public void setUp() {
+    void setUp() {
         generation = new Generation()
         project = ProjectBuilder.builder().withName('project').build()
         copyManifest()
     }
 
     @Test
-    public void testNullProject() throws Exception {
+    void testNullProject() throws Exception {
         expectedException.expect(UnsupportedOperationException.class)
         expectedException.expectMessage('Project is null')
 
@@ -35,7 +36,7 @@ class GenerationTest {
     }
 
     @Test
-    public void testThatExtensionIsAdded() {
+    void testThatExtensionIsAdded() {
         project.plugins.apply('com.android.application')
         generation.apply(project)
 
@@ -46,17 +47,19 @@ class GenerationTest {
     }
 
     @Test
-    public void testNotAndroidProject() {
+    void testNotAndroidProject() {
         generation.apply(project)
 
         assert !project.hasProperty("generateReleaseJavadoc")
         assert !project.hasProperty("generateDebugJavadoc")
         assert !project.hasProperty("generateReleaseJavadocJar")
         assert !project.hasProperty("generateDebugJavadocJar")
+        assert !project.hasProperty("generateJavadoc")
+        assert !project.hasProperty("generateJavadocJar")
     }
 
     @Test
-    public void testJavaProject() {
+    void testJavaProject() {
         project.plugins.apply('java')
         generation.apply(project)
 
@@ -64,10 +67,12 @@ class GenerationTest {
         assert !project.hasProperty("generateDebugJavadoc")
         assert !project.hasProperty("generateReleaseJavadocJar")
         assert !project.hasProperty("generateDebugJavadocJar")
+        assert !project.hasProperty("generateJavadoc")
+        assert !project.hasProperty("generateJavadocJar")
     }
 
     @Test
-    public void testAndroidAppProject() {
+    void testAndroidAppProject() {
         doNotRunOnTravis()
         withAndroidAppProject()
 
@@ -83,11 +88,36 @@ class GenerationTest {
         assert project.generateDebugJavadoc instanceof Javadoc
         assert project.generateReleaseJavadocJar instanceof Jar
         assert project.generateDebugJavadocJar instanceof Jar
+        assert project.generateJavadoc instanceof Task
+        assert project.generateJavadocJar instanceof Task
     }
 
+    @Test
+    void testAndroidAppProjectInverseApply() {
+        doNotRunOnTravis()
+
+        // Apply javadoc plugin first
+        generation.apply(project)
+        applyAndroidPlugin('com.android.application')
+
+        // These tasks are only added after project.afterEvaluated() is called.
+        assert !project.hasProperty("generateReleaseJavadoc")
+        assert !project.hasProperty("generateDebugJavadoc")
+        assert !project.hasProperty("generateReleaseJavadocJar")
+        assert !project.hasProperty("generateDebugJavadocJar")
+
+        project.evaluate()
+
+        assert project.generateReleaseJavadoc instanceof Javadoc
+        assert project.generateDebugJavadoc instanceof Javadoc
+        assert project.generateReleaseJavadocJar instanceof Jar
+        assert project.generateDebugJavadocJar instanceof Jar
+        assert project.generateJavadoc instanceof Task
+        assert project.generateJavadocJar instanceof Task
+    }
 
     @Test
-    public void testAndroidLibraryProject() {
+    void testAndroidLibraryProject() {
         doNotRunOnTravis()
         withAndroidLibProject()
 
@@ -103,10 +133,12 @@ class GenerationTest {
         assert project.generateDebugJavadoc instanceof Javadoc
         assert project.generateReleaseJavadocJar instanceof Jar
         assert project.generateDebugJavadocJar instanceof Jar
+        assert project.generateJavadoc instanceof Task
+        assert project.generateJavadocJar instanceof Task
     }
 
     @Test
-    public void filterVariant() {
+    void filterVariant() {
         doNotRunOnTravis()
         withAndroidAppProject()
 
@@ -120,10 +152,12 @@ class GenerationTest {
         assert !project.hasProperty("generateDebugJavadocJar")
         assert project.generateReleaseJavadoc instanceof Javadoc
         assert project.generateReleaseJavadocJar instanceof Jar
+        assert project.generateJavadoc instanceof Task
+        assert project.generateJavadocJar instanceof Task
     }
 
     @Test
-    public void transformTaskName() {
+    void transformTaskName() {
         doNotRunOnTravis()
         withAndroidAppProject()
 
@@ -139,20 +173,32 @@ class GenerationTest {
         assert !project.hasProperty("generateDebugJavadocJar")
         assert project.generateYeahJavadoc instanceof Javadoc
         assert project.generateYeahJavadocJar instanceof Jar
+        assert project.generateJavadoc instanceof Task
+        assert project.generateJavadocJar instanceof Task
     }
 
     private void withAndroidAppProject() {
-        project.plugins.apply('com.android.application')
+        applyAndroidPlugin('com.android.application')
         generation.apply(project)
-        project.android.compileSdkVersion 25
-        project.android.buildToolsVersion "25.0.2"
     }
 
     private void withAndroidLibProject() {
-        project.plugins.apply('com.android.library')
+        applyAndroidPlugin('com.android.library')
         generation.apply(project)
-        project.android.compileSdkVersion 25
-        project.android.buildToolsVersion "25.0.2"
+    }
+
+    private void applyAndroidPlugin(String plugin) {
+        project.plugins.apply(plugin)
+        project.android.compileSdkVersion 27
+        project.android.buildToolsVersion "27.0.3"
+        project.android.defaultConfig {
+            minSdkVersion 17
+            targetSdkVersion 27
+            versionCode 1
+            versionName "dev"
+
+            testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        }
     }
 
     private void copyManifest() {
@@ -166,7 +212,7 @@ class GenerationTest {
     private static void doNotRunOnTravis() { // Unless we know how to have a good ANDROID_HOME env var on travis.
         String res = System.getenv("TRAVIS")
         if (res != null) {
-            Assume.assumeFalse(res == "true");
+            Assume.assumeFalse(res == "true")
         }
     }
 }

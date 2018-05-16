@@ -45,6 +45,12 @@ apply plugin: "com.vanniktech.android.javadoc"
 ./gradlew generateReleaseJavadoc
 ```
 
+or to run javadoc task for all variants :
+
+```gradle
+./gradlew generateJavadoc
+```
+
 **HTML reports**
 
 ```
@@ -57,6 +63,12 @@ apply plugin: "com.vanniktech.android.javadoc"
 ```
 ./gradlew generateDebugJavadocJar
 ./gradlew generateReleaseJavadocJar
+```
+
+or to run javadoc archive task for all variants :
+
+```gradle
+./gradlew generateJavadocJar
 ```
 
 ## Customize Plugin

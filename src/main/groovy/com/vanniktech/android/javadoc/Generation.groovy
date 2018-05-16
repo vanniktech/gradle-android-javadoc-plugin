@@ -1,5 +1,6 @@
 package com.vanniktech.android.javadoc
 
+import com.android.build.gradle.BasePlugin
 import com.android.build.gradle.api.BaseVariant
 import com.vanniktech.android.javadoc.extensions.AndroidJavadocExtension
 import org.gradle.api.DomainObjectCollection
@@ -14,7 +15,11 @@ import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.external.javadoc.JavadocMemberLevel
 
 class Generation implements Plugin<Project> {
-    Logger logger;
+
+    private static final String JAVADOC_TASK = "generateJavadoc"
+    private static final String JAVADOC_JAR_TASK = "generateJavadocJar"
+
+    Logger logger
 
     @Override
     void apply(final Project project) {
@@ -25,13 +30,25 @@ class Generation implements Plugin<Project> {
 
         project.extensions.create("androidJavadoc", AndroidJavadocExtension)
 
-        project.allprojects {
-            afterEvaluate { Project p ->
-                // Do not throw exception anymore. We want to support big projects with a lot of modules that not all of them are android.
-                if (p.hasProperty('android')) {
-                    applyPluginToProject(p);
-                } else {
-                    logger.info "${p.name} is not an android project - plugin is not applied"
+        def hasSubProjects = project.subprojects.size() > 0
+
+        if (hasSubProjects) {
+            project.subprojects { subProject ->
+                applyPlugin(subProject)
+            }
+        } else {
+            applyPlugin(project)
+        }
+    }
+
+    private void applyPlugin(Project project) {
+        if (project.hasProperty('android')) {
+            applyPluginToProject(project)
+        } else {
+            // Waiting for android plugin to be applied
+            project.plugins.whenPluginAdded { Plugin plugin ->
+                if (plugin instanceof BasePlugin) {
+                    applyPluginToProject(project)
                 }
             }
         }
@@ -39,12 +56,33 @@ class Generation implements Plugin<Project> {
 
     private void applyPluginToProject(Project project) {
         if (project.android.hasProperty('applicationVariants')) {
+            createRootTask(project)
             addJavaTaskToProjectWith(project, (DomainObjectCollection<BaseVariant>) project.android.applicationVariants)
         } else if (project.android.hasProperty('libraryVariants')) {
+            createRootTask(project)
             addJavaTaskToProjectWith(project, (DomainObjectCollection<BaseVariant>) project.android.libraryVariants)
         } else {
             // Do not throw exception anymore to support big projects with a lot of modules that not all of them are android.
             logger.info "${project.name} has no application or library variant - plugin is not applied"
+        }
+    }
+
+    private void createRootTask(Project project) {
+        if (project.tasks.findByPath(JAVADOC_TASK)) {
+            logger.debug "task $JAVADOC_TASK already exists"
+        } else {
+            project.task(JAVADOC_TASK) {
+                description = "Generates javadoc for ${project.name}"
+                group = 'Documentation'
+            }
+        }
+        if (project.tasks.findByPath(JAVADOC_JAR_TASK)) {
+            logger.debug "task $JAVADOC_JAR_TASK already exists"
+        } else {
+            project.task(JAVADOC_JAR_TASK, dependsOn: [JAVADOC_TASK]) {
+                description = "Generates javadoc archive for ${project.name}"
+                group = 'Documentation'
+            }
         }
     }
 
@@ -74,20 +112,25 @@ class Generation implements Plugin<Project> {
             Task javadocTask = createJavadocTask(project, variant, taskName)
             Task javadocArchiveTask = createJavadocArchiveTask(project, variant, genJavadocJarTaskName(project, variant))
             javadocArchiveTask.dependsOn(javadocTask)
+            project.tasks.getByName(JAVADOC_TASK).dependsOn(javadocTask)
+            project.tasks.getByName(JAVADOC_JAR_TASK).dependsOn(javadocArchiveTask)
         }
     }
 
     private Task createJavadocTask(final Project project, variant, String taskName) {
         project.task(taskName, type: Javadoc) {
             title = "Documentation for ${project.name} at version ${project.android.defaultConfig.versionName}"
-            description = "Generates Javadoc for $variant.name."
+            description = "Generates javadoc for $variant.name variant."
             group = 'Documentation'
 
             destinationDir = getJavadocFolder(project, variant)
             source = variant.javaCompiler.source
 
-            ext.androidJar = "${project.android.sdkDirectory}/platforms/${project.android.compileSdkVersion}/android.jar"
-            classpath = project.files(variant.javaCompiler.classpath.files) + project.files(ext.androidJar)
+            // Fix issue : Error: Can not create variant 'android-lint' after configuration ': library: debugRuntimeElements' has been resolved
+            doFirst {
+                classpath = project.files(variant.javaCompile.classpath.files,
+                        project.android.getBootClasspath())
+            }
 
             if (JavaVersion.current().isJava8Compatible()) {
                 options.addStringOption('Xdoclint:none', '-quiet')
@@ -102,7 +145,7 @@ class Generation implements Plugin<Project> {
 
     private Task createJavadocArchiveTask(Project project, variant, String taskName) {
         project.task("${taskName}", type: Jar) {
-            description = "Compress Javadoc for $variant.name."
+            description = "Compress javadoc for $variant.name variant."
             group = "Documentation"
             classifier = 'javadoc'
             from getJavadocFolder(project, variant)
@@ -128,19 +171,19 @@ class Generation implements Plugin<Project> {
         return "${project.androidJavadoc.taskNameTransformer(variant).capitalize()}"
     }
 
-    private static String genJavadocTaskName(final Project project, variant) {
+    static String genJavadocTaskName(final Project project, variant) {
         return "generate${getBaseTaskName(project, variant)}Javadoc"
     }
 
-    private static String genDeleteTaskName(final Project project, variant) {
+    static String genDeleteTaskName(final Project project, variant) {
         return "delete${getBaseTaskName(project, variant)}Javadoc"
     }
 
-    private static String genJavadocJarTaskName(final Project project, variant) {
+    static String genJavadocJarTaskName(final Project project, variant) {
         return "${genJavadocTaskName(project, variant)}Jar"
     }
 
     private static File getJavadocFolder(final Project project, variant) {
-        return new File(project.androidJavadoc.outputDir(project), getBaseTaskName(project, variant))
+        return new File("${project.androidJavadoc.outputDir(project)}", "${project.androidJavadoc.taskNameTransformer(variant)}")
     }
 }
