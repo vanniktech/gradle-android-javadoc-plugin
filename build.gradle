@@ -6,28 +6,39 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.gradle.publish:plugin-publish-plugin:0.9.9'
+    classpath 'com.gradle.publish:plugin-publish-plugin:0.9.10'
     classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
     classpath 'com.vanniktech:gradle-android-junit-jacoco-plugin:0.11.0'
-    classpath 'com.vanniktech:gradle-maven-publish-plugin:0.1.0'
+    classpath 'com.vanniktech:gradle-maven-publish-plugin:0.2.0'
   }
 }
 
 apply plugin: 'groovy'
-apply plugin: 'java'
+apply plugin: 'java-library'
+apply plugin: 'java-gradle-plugin'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'com.vanniktech.android.junit.jacoco'
 apply plugin: "com.vanniktech.maven.publish"
 
+gradlePlugin {
+  plugins {
+    androidJavadocPlugin {
+      id = 'com.vanniktech.android.javadoc'
+      implementationClass = 'com.vanniktech.android.javadoc.Generation'
+    }
+  }
+}
+
 repositories {
-  jcenter()
+  mavenCentral()
   google()
+  jcenter()
 }
 
 dependencies {
-  compile gradleApi()
-  compile localGroovy()
+  api gradleApi()
+  api localGroovy()
 
   compileOnly 'com.android.tools.build:gradle:3.1.2'
 
@@ -52,16 +63,6 @@ pluginBundle {
 }
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '4.5'
+  gradleVersion = '4.7'
   distributionType = Wrapper.DistributionType.ALL
-}
-
-test {
-  environment "ANDROID_HOME", System.getenv("ANDROID_HOME")
-  testLogging {
-    showStackTraces true
-    showStandardStreams = true
-    events "failed"
-    exceptionFormat "full"
-  }
 }
