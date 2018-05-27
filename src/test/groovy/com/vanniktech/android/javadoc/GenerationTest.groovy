@@ -5,14 +5,10 @@ import org.gradle.api.Task
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
-
-import java.nio.file.Path
-import java.nio.file.Paths
 
 class GenerationTest {
     @Rule public ExpectedException expectedException = ExpectedException.none()
@@ -24,7 +20,10 @@ class GenerationTest {
     void setUp() {
         generation = new Generation()
         project = ProjectBuilder.builder().withName('project').build()
-        copyManifest()
+
+        def manifestFile = new File(project.projectDir, "src/main/AndroidManifest.xml")
+        manifestFile.parentFile.mkdirs()
+        manifestFile.setText('<manifest package="com.foo.bar"/>')
     }
 
     @Test
@@ -73,7 +72,6 @@ class GenerationTest {
 
     @Test
     void testAndroidAppProject() {
-        doNotRunOnTravis()
         withAndroidAppProject()
 
         // These tasks are only added after project.afterEvaluated() is called.
@@ -94,7 +92,6 @@ class GenerationTest {
 
     @Test
     void testAndroidAppProjectInverseApply() {
-        doNotRunOnTravis()
 
         // Apply javadoc plugin first
         generation.apply(project)
@@ -118,7 +115,6 @@ class GenerationTest {
 
     @Test
     void testAndroidLibraryProject() {
-        doNotRunOnTravis()
         withAndroidLibProject()
 
         // These tasks are only added after project.afterEvaluated() is called.
@@ -139,7 +135,6 @@ class GenerationTest {
 
     @Test
     void filterVariant() {
-        doNotRunOnTravis()
         withAndroidAppProject()
 
         project.androidJavadoc.variantFilter { variant ->
@@ -158,7 +153,6 @@ class GenerationTest {
 
     @Test
     void transformTaskName() {
-        doNotRunOnTravis()
         withAndroidAppProject()
 
         project.androidJavadoc.taskNameTransformer { variant ->
@@ -196,23 +190,6 @@ class GenerationTest {
             targetSdkVersion 27
             versionCode 1
             versionName "dev"
-
-            testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        }
-    }
-
-    private void copyManifest() {
-        Path source = Paths.get("./src/test/res/AndroidManifest.xml").toAbsolutePath().normalize()
-        Path dest = Paths.get(project.projectDir.getPath(), "src/main")
-        dest.toFile().mkdirs()
-        dest = Paths.get(dest.toString(), "AndroidManifest.xml")
-        dest.toFile() << source.toFile().text
-    }
-
-    private static void doNotRunOnTravis() { // Unless we know how to have a good ANDROID_HOME env var on travis.
-        String res = System.getenv("TRAVIS")
-        if (res != null) {
-            Assume.assumeFalse(res == "true")
         }
     }
 }
