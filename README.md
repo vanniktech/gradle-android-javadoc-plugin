@@ -2,8 +2,6 @@
 
 Gradle plugin that generates Java Documentation from an Android Gradle project.
 
-Works with the latest Gradle Android Tools version 3.0.1.
-
 # Set up
 
 **app/build.gradle** or **library/build.gradle**
@@ -14,7 +12,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath "com.vanniktech:gradle-android-javadoc-plugin:0.2.1"
+    classpath "com.vanniktech:gradle-android-javadoc-plugin:0.3.0"
   }
 }
 
