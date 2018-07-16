@@ -29,7 +29,7 @@ buildscript {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
   }
   dependencies {
-    classpath "com.vanniktech:gradle-android-javadoc-plugin:0.3.0-SNAPSHOT"
+    classpath "com.vanniktech:gradle-android-javadoc-plugin:0.4.0-SNAPSHOT"
   }
 }
 
