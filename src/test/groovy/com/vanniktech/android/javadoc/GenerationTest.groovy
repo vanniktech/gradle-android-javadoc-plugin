@@ -183,11 +183,11 @@ class GenerationTest {
 
     private void applyAndroidPlugin(String plugin) {
         project.plugins.apply(plugin)
-        project.android.compileSdkVersion 27
-        project.android.buildToolsVersion "27.0.3"
+        project.android.compileSdkVersion 28
+        project.android.buildToolsVersion "28.0.3"
         project.android.defaultConfig {
             minSdkVersion 17
-            targetSdkVersion 27
+            targetSdkVersion 28
             versionCode 1
             versionName "dev"
         }
