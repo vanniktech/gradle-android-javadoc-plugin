@@ -7,12 +7,14 @@ import org.gradle.api.DomainObjectCollection
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.logging.Logger
 import org.gradle.api.tasks.Delete
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.external.javadoc.JavadocMemberLevel
+
+import javax.annotation.Nullable
 
 class Generation implements Plugin<Project> {
 
@@ -68,25 +70,34 @@ class Generation implements Plugin<Project> {
     }
 
     private void createRootTask(Project project) {
-        if (project.tasks.findByPath(JAVADOC_TASK)) {
+        def javadoc
+        try {
+            javadoc = project.tasks.named(JAVADOC_TASK)
             logger.debug "task $JAVADOC_TASK already exists"
-        } else {
-            project.task(JAVADOC_TASK) {
+        } catch (Exception ignored) {
+            javadoc = project.tasks.register(JAVADOC_TASK) {
                 description = "Generates javadoc for ${project.name}"
                 group = 'Documentation'
             }
         }
-        if (project.tasks.findByPath(JAVADOC_JAR_TASK)) {
+
+        def javadocJar
+        try {
+            javadocJar = project.tasks.named(JAVADOC_JAR_TASK)
             logger.debug "task $JAVADOC_JAR_TASK already exists"
-        } else {
-            project.task(JAVADOC_JAR_TASK, dependsOn: [JAVADOC_TASK]) {
-                description = "Generates javadoc archive for ${project.name}"
+        } catch (Exception ignored) {
+            javadocJar = project.tasks.register(JAVADOC_JAR_TASK) {
+                description = "Generates javadoc for ${project.name}"
                 group = 'Documentation'
             }
         }
+
+        javadocJar.configure {
+            dependsOn javadoc
+        }
     }
 
-    private Task addJavaTaskToProjectWith(final Project project, final DomainObjectCollection<BaseVariant> variants) {
+    private void addJavaTaskToProjectWith(final Project project, final DomainObjectCollection<BaseVariant> variants) {
         variants.all { variant ->
             // Apply a filter because javadoc could be configured for only some particular variants.
             if (project.androidJavadoc.variantFilter(variant)) {
@@ -98,37 +109,42 @@ class Generation implements Plugin<Project> {
         }
     }
 
-    private Task createTask(final Project project, variant) {
+    private void createTask(final Project project, variant) {
         // Get task's name according to android variant.
         String taskName = genJavadocTaskName(project, variant)
 
         logger.debug "Create task ${taskName} for project ${project.name}, variant ${variant.name}"
         // We are creating the task with the same name only once. This is a protection if task already exists
         // because the name of the task is configurable and can be the same for several variants.
-        if (project.tasks.findByPath(taskName)) {
+        if (findTask(project, taskName)) {
             logger.debug "task $taskName already exists"
-            return project.tasks.findByPath(taskName)
         } else {
-            Task javadocTask = createJavadocTask(project, variant, taskName)
-            Task javadocArchiveTask = createJavadocArchiveTask(project, variant, genJavadocJarTaskName(project, variant))
-            javadocArchiveTask.dependsOn(javadocTask)
-            project.tasks.getByName(JAVADOC_TASK).dependsOn(javadocTask)
-            project.tasks.getByName(JAVADOC_JAR_TASK).dependsOn(javadocArchiveTask)
+            TaskProvider javadocTask = createJavadocTask(project, variant, taskName)
+            TaskProvider javadocArchiveTask = createJavadocArchiveTask(project, variant, genJavadocJarTaskName(project, variant))
+            javadocArchiveTask.configure {
+                dependsOn javadocTask
+            }
+            findTask(project, JAVADOC_TASK).configure {
+                dependsOn javadocTask
+            }
+            findTask(project, JAVADOC_JAR_TASK).configure {
+                dependsOn javadocArchiveTask
+            }
         }
     }
 
-    private Task createJavadocTask(final Project project, variant, String taskName) {
-        project.task(taskName, type: Javadoc) {
+    private TaskProvider createJavadocTask(final Project project, variant, String taskName) {
+        project.tasks.register(taskName, Javadoc) {
             title = "Documentation for ${project.name} at version ${project.android.defaultConfig.versionName}"
             description = "Generates javadoc for $variant.name variant."
             group = 'Documentation'
 
             destinationDir = getJavadocFolder(project, variant)
-            source = variant.javaCompiler.source
+            source = variant.sourceSets.collect { it.java.sourceFiles }.inject { m, i -> m + i }
 
             // Fix issue : Error: Can not create variant 'android-lint' after configuration ': library: debugRuntimeElements' has been resolved
             doFirst {
-                classpath = project.files(variant.javaCompile.classpath.files,
+                classpath = project.files(variant.javaCompileProvider.get().classpath.files,
                         project.android.getBootClasspath())
             }
 
@@ -143,8 +159,8 @@ class Generation implements Plugin<Project> {
         }
     }
 
-    private Task createJavadocArchiveTask(Project project, variant, String taskName) {
-        project.task("${taskName}", type: Jar) {
+    private TaskProvider createJavadocArchiveTask(Project project, variant, String taskName) {
+        project.tasks.register(taskName, Jar) {
             description = "Compress javadoc for $variant.name variant."
             group = "Documentation"
             classifier = 'javadoc'
@@ -158,11 +174,14 @@ class Generation implements Plugin<Project> {
 
     private void addDeleteJavadocTaskToCleanTaskIn(final Project project, variant) {
         String taskName = genDeleteTaskName(project, variant)
-        if (project.tasks.findByPath(taskName)) {
+        if (findTask(project, taskName)) {
             logger.debug "task $taskName already exists"
         } else {
-            project.clean.dependsOn project.task(taskName, type: Delete) {
+            def del = project.tasks.register(taskName, Delete) {
                 delete getJavadocFolder(project, variant)
+            }
+            project.tasks.named("clean").configure {
+                dependsOn del
             }
         }
     }
@@ -185,5 +204,16 @@ class Generation implements Plugin<Project> {
 
     private static File getJavadocFolder(final Project project, variant) {
         return new File("${project.androidJavadoc.outputDir(project)}", "${project.androidJavadoc.taskNameTransformer(variant)}")
+    }
+
+    @Nullable
+    private TaskProvider findTask(final Project project, String taskName) {
+        TaskProvider ret = null
+        try {
+            ret = project.tasks.named(taskName)
+        } catch (Exception ignored) {
+            logger.debug ignored.toString()
+        }
+        return ret
     }
 }
