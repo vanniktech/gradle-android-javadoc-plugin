@@ -8,8 +8,8 @@ buildscript {
   dependencies {
     classpath 'com.gradle.publish:plugin-publish-plugin:0.10.0'
     classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
-    classpath 'com.vanniktech:gradle-android-junit-jacoco-plugin:0.12.0'
-    classpath 'com.vanniktech:gradle-maven-publish-plugin:0.4.0'
+    classpath 'com.vanniktech:gradle-android-junit-jacoco-plugin:0.16.0'
+    classpath 'com.vanniktech:gradle-maven-publish-plugin:0.16.0'
   }
 }
 
@@ -40,13 +40,13 @@ dependencies {
   api gradleApi()
   api localGroovy()
 
-  compileOnly 'com.android.tools.build:gradle:3.3.0'
+  compileOnly 'com.android.tools.build:gradle:4.2.1'
 
-  testCompile 'com.android.tools.build:gradle:3.3.0'
+  testCompile 'com.android.tools.build:gradle:4.2.1'
   testCompile 'junit:junit:4.12'
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_8
 
 pluginBundle {
   website = POM_URL
@@ -61,7 +61,7 @@ pluginBundle {
   }
 }
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '4.10.1'
+wrapper {
+  gradleVersion = '6.8.3'
   distributionType = Wrapper.DistributionType.ALL
 }
