@@ -1,3 +1,6 @@
+import org.gradle.api.internal.classpath.ModuleRegistry
+import org.gradle.api.internal.project.ProjectInternal
+
 buildscript {
   repositories {
     mavenCentral()
@@ -7,7 +10,6 @@ buildscript {
 
   dependencies {
     classpath 'com.gradle.publish:plugin-publish-plugin:0.10.0'
-    classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
     classpath 'com.vanniktech:gradle-android-junit-jacoco-plugin:0.16.0'
     classpath 'com.vanniktech:gradle-maven-publish-plugin:0.16.0'
   }
@@ -16,7 +18,6 @@ buildscript {
 apply plugin: 'groovy'
 apply plugin: 'java-library'
 apply plugin: 'java-gradle-plugin'
-apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'com.vanniktech.android.junit.jacoco'
 apply plugin: "com.vanniktech.maven.publish"
@@ -42,8 +43,16 @@ dependencies {
 
   compileOnly 'com.android.tools.build:gradle:4.2.1'
 
-  testCompile 'com.android.tools.build:gradle:4.2.1'
-  testCompile 'junit:junit:4.12'
+  testImplementation 'com.android.tools.build:gradle:4.2.1'
+  testImplementation 'junit:junit:4.12'
+
+  // https://github.com/gradle/gradle/issues/16774#issuecomment-893493869
+  def toolingApiBuildersJar = (project as ProjectInternal).services.get(ModuleRegistry.class)
+    .getModule("gradle-tooling-api-builders")
+    .classpath
+    .asFiles
+    .first()
+  testRuntimeOnly(files(toolingApiBuildersJar))
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -58,6 +67,12 @@ pluginBundle {
       tags = ['gradle', 'android', 'javadoc', 'app module', 'library module']
       description = POM_DESCRIPTION
     }
+  }
+}
+
+tasks.withType(Test) {
+  testLogging {
+    testLogging.exceptionFormat = 'full'
   }
 }
 
